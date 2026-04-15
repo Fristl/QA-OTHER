@@ -1,0 +1,32 @@
+[project]
+name = "QA-OTHER"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.13.3"
+dependencies = [
+]
+
+[dependency-groups]
+dev = [
+    "isort>=6.0.1",
+    "mypy>=1.20.0",
+    "pre-commit>=4.5.1",
+    "ruff>=0.15.10",
+]
+
+# Linters
+
+[tool.ruff]
+extend = "ruff.toml"
+
+[tool.ruff.lint]
+unfixable = []
+
+
+[tool.mypy]
+python_version = "3.12"
+
+follow_imports = "silent"
+disable_error_code = "import-untyped"
+ignore_missing_imports = true
