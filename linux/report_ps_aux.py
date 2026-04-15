@@ -115,14 +115,14 @@ def build_report(summary: dict) -> str:
     if summary.get("top_mem_proc"):
         lines.append(
             f"Top memory: {summary['top_mem_proc'].mem:.1f}% "
-            f"- {summary['top_mem_proc'].command}",
+            f"- {summary['top_mem_proc'].command:.20}",
         )
     else:
         lines.append("Top memory: n/a")
     if summary.get("top_cpu_proc"):
         lines.append(
             f"Top CPU: {summary['top_cpu_proc'].cpu:.1f}% "
-            f"- {summary['top_cpu_proc'].command}",
+            f"- {summary['top_cpu_proc'].command:.20}",
         )
     else:
         lines.append("Top CPU: n/a")
