@@ -1,6 +1,7 @@
 """Accesses log parser."""  # noqa: INP001
 import argparse
 import json
+import pprint
 import re
 from collections import Counter
 from dataclasses import dataclass
@@ -183,12 +184,12 @@ def analyze_file(path: Path) -> dict:
 def save_report(report: dict, out_dir: Path) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now(tz=timezone).strftime("%Y-%m-%d_%H-%M-%S")
-    out_path = out_dir / f"{timestamp}-scan.json"
-    out_path.write_text(
+    report_file = out_dir / f"{timestamp}-scan.json"
+    report_file.write_text(
         json.dumps(report, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    return out_path
+    return report_file
 
 
 def main() -> int:
@@ -206,8 +207,9 @@ def main() -> int:
     out_dir = Path(args.out)
     for log_file in files:
         report = analyze_file(log_file)
-        report_path = save_report(report, out_dir)
-        print(f"Report created for {log_file}: {report_path}")  # noqa: T201
+        report_file = save_report(report, out_dir)
+        pprint.pprint(report)  # noqa: T203
+        print(f"Report created for {log_file}: {report_file}")  # noqa: T201
     return 0
 
 
