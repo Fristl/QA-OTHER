@@ -56,10 +56,10 @@ def status_from_target(target: str) -> HTTPStatus:
         query = urlparse(target).query
         code = parse_qs(query).get("status", [None])[0]
         if code in (None, ""):
-            return HTTPStatus(HTTPStatus.OK)
-        return HTTPStatus(code)  # type: ignore[arg-type]
+            return HTTPStatus(200)
+        return HTTPStatus(int(code))
     except Exception:
-        return HTTPStatus(HTTPStatus.OK)
+        return HTTPStatus(200)
 
 
 def build_plain_text_response(

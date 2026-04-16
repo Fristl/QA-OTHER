@@ -1,6 +1,5 @@
 """Test for validation of service"""
 import re
-from http import HTTPStatus
 
 import pytest
 import requests
@@ -8,7 +7,7 @@ import requests
 
 def test_response_format(host, port):
     r = requests.get(f"http://{host}:{port}")
-    assert r.status_code == HTTPStatus.OK
+    assert r.status_code == 200
     headers = r.text.split("\r\n")
     assert headers[0] == "Request Method: GET"
     assert re.match(
@@ -48,7 +47,7 @@ def test_status_code(host, port, code, expected_code):
 
 def test_status_second_parameter(host, port):
     r = requests.get(f"http://{host}:{port}/?a=1&status=500")
-    assert r.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+    assert r.status_code == 500
 
 
 def test_post_method(host, port):
@@ -59,4 +58,4 @@ def test_post_method(host, port):
 def test_server_alive(host, port):
     for r in range(2):
         r = requests.get(f"http://{host}:{port}")
-        assert r.status_code == HTTPStatus.OK
+        assert r.status_code == 200
