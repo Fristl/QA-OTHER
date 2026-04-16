@@ -2,6 +2,7 @@
 
 import argparse
 import subprocess
+from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -52,30 +53,35 @@ def parse_ps_aux(lines: list[str]) -> list[Process]:
 
 def make_summary(procs: list[Process]) -> dict[str, Any]:
     total_processes = len(procs)
-    users = sorted({p.user for p in procs})
 
-    user_counts: dict[str, int] = {}
+    users_counter: Counter = Counter()
+
     top_mem_proc: Process | None = None
+    total_mem_sum = 0.0
+
     top_cpu_proc: Process | None = None
+    total_cpu_sum = 0.0
 
     for p in procs:
-        user_counts[p.user] = user_counts.get(p.user, 0) + 1
+        users_counter[p.user] += 1
+
         if top_mem_proc is None or p.mem > top_mem_proc.mem:
             top_mem_proc = p
+        total_mem_sum += p.mem
+
         if top_cpu_proc is None or p.cpu > top_cpu_proc.cpu:
             top_cpu_proc = p
+        total_cpu_sum += p.cpu
 
-    total_cpu_sum = sum(p.cpu for p in procs)
-    total_mem_sum = sum(p.mem for p in procs)
+
     sorted_user_counts = sorted(
-        user_counts.items(),
+        users_counter.items(),
         key=lambda kv: (-kv[1], kv[0]),
     )
 
     return {
         "total_processes": total_processes,
-        "users": users,
-        "user_counts": user_counts,
+        "users": sorted(users_counter.keys()),
         "top_mem_proc": top_mem_proc,
         "top_cpu_proc": top_cpu_proc,
         "total_cpu_sum": total_cpu_sum,
@@ -130,9 +136,11 @@ def build_report(summary: dict) -> str:
     return "\n".join(lines)
 
 
-def save_report(report_text: str, directory: Path | None = None) -> Path:
+def save_report(report_text: str, output_dir: str) -> Path:
     """Save report to txt file."""
-    directory = directory or Path.cwd()
+    directory = Path(output_dir)
+    directory.mkdir(parents=True, exist_ok=True)
+
     filename = datetime.now(tz=timezone).strftime(
         "%d-%m-%Y-%H-%M-%S-%f-scan.txt",
     )
@@ -148,7 +156,7 @@ def main() -> int:
     parser.add_argument(
         "-o",
         "--output-dir",
-        default=".",
+        default="./",
         help="Directory for the report (current directory by default).",
     )
     args = parser.parse_args()
@@ -159,9 +167,7 @@ def main() -> int:
     report = build_report(summary)
     print(report)  # noqa: T201
 
-    out_dir = Path(args.output_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = save_report(report, out_dir)
+    out_path = save_report(report, args.output_dir)
     print(f"\nSaved to file: {out_path}")  # noqa: T201
     return 0
 
