@@ -1,0 +1,7 @@
+services:
+  db:
+    image: 'mariadb'
+    environment:
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=yes
+    ports:
+      - 3306:3306

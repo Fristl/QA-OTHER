@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.13.3"
 dependencies = [
+    "pymysql>=1.1.2",
 ]
 
 [dependency-groups]
@@ -32,3 +33,7 @@ python_version = "3.12"
 follow_imports = "silent"
 disable_error_code = "import-untyped"
 ignore_missing_imports = true
+
+[tool.pytest]
+minversion = "8.2.2"
+addopts = ["--strict-markers", "-s", "-v", "-p", "no:warnings"]
